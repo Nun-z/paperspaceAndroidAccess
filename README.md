@@ -11,3 +11,5 @@ Long-press the home screen, choose **Widgets**, and add **Paperspace Access**. T
 
 ## Notes
 The app uses the Paperspace v1 API (`api.paperspace.com/v1/machines`). The status refreshes every 5 seconds while the app is open. Credentials are stored in app-private storage and excluded from backups.
+
+This project was created with AI assistance, using Claude Code.
