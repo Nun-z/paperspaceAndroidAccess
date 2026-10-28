@@ -27,6 +27,13 @@
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <Button
+        android:id="@+id/machinesLink"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/find_machine_id" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,6 +48,13 @@
             android:inputType="textPassword"
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/apiKeysLink"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/get_api_key" />
 
     <Button
         android:id="@+id/saveButton"

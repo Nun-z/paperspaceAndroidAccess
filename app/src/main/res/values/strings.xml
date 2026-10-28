@@ -11,6 +11,9 @@
     <string name="settings">Settings</string>
     <string name="machine_id">Machine ID</string>
     <string name="api_key">API key</string>
+    <string name="find_machine_id">Find your machine ID</string>
+    <string name="get_api_key">Create an API key</string>
+    <string name="no_browser">No browser available to open the link</string>
     <string name="save">Save</string>
     <string name="saved">Saved</string>
     <string name="fields_required">Enter both the machine ID and the API key</string>
