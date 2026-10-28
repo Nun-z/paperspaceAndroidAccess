@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/widgetStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:maxLines="2"
+        android:padding="4dp"
+        android:text="@string/widget_preview_status"
+        android:textColor="@color/widget_text"
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/widgetStart"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/widget_button"
+            android:text="@string/widget_start"
+            android:textAllCaps="false"
+            android:textColor="@color/widget_button_text"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/widgetStop"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/widget_button"
+            android:text="@string/widget_stop"
+            android:textAllCaps="false"
+            android:textColor="@color/widget_button_text"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/widgetRestart"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/widget_button"
+            android:text="@string/widget_restart"
+            android:textAllCaps="false"
+            android:textColor="@color/widget_button_text"
+            android:textSize="13sp" />
+    </LinearLayout>
+</LinearLayout>

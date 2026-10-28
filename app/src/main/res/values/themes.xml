@@ -1,3 +1,11 @@
 <resources>
     <style name="Theme.PaperspaceAccess" parent="Theme.Material3.DayNight.NoActionBar" />
+
+    <!-- See-through window, so only the confirmation dialog shows over the home screen -->
+    <style name="Theme.PaperspaceAccess.Confirm">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
 </resources>

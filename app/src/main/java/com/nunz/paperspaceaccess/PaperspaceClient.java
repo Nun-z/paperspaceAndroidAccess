@@ -16,9 +16,20 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-// Talks to the Paperspace v1 machines API; callbacks run on the main thread
+// Talks to the Paperspace v1 machines API; async callbacks run on the main thread
 public final class PaperspaceClient {
     private static final String API_BASE = "https://api.paperspace.com/v1/machines/";
+    private static final OkHttpClient HTTP = new OkHttpClient();
+
+    // The API answered, but not with success
+    public static final class HttpException extends IOException {
+        public final int code;
+
+        HttpException(int code) {
+            super("HTTP " + code);
+            this.code = code;
+        }
+    }
 
     public interface StatusCallback {
         void onState(String state);
@@ -31,18 +42,11 @@ public final class PaperspaceClient {
         void onFailure(String reason);
     }
 
-    private final OkHttpClient http = new OkHttpClient();
     private final Handler main = new Handler(Looper.getMainLooper());
 
     // Start, restart, or shutdown the machine; action is "start", "stop" or "restart"
     public void send(String machineId, String apiKey, String action, ActionCallback callback) {
-        Request request = new Request.Builder()
-                .url(API_BASE + machineId + "/" + action)
-                .header("Authorization", "Bearer " + apiKey)
-                .patch(RequestBody.create(new byte[0], null))
-                .build();
-
-        http.newCall(request).enqueue(new Callback() {
+        HTTP.newCall(actionRequest(machineId, apiKey, action)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 main.post(() -> callback.onFailure(e.getMessage()));
@@ -63,13 +67,7 @@ public final class PaperspaceClient {
 
     // Get the status of the machine
     public void getStatus(String machineId, String apiKey, StatusCallback callback) {
-        Request request = new Request.Builder()
-                .url(API_BASE + machineId)
-                .header("Authorization", "Bearer " + apiKey)
-                .get()
-                .build();
-
-        http.newCall(request).enqueue(new Callback() {
+        HTTP.newCall(statusRequest(machineId, apiKey)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 main.post(callback::onUnreachable);
@@ -78,17 +76,57 @@ public final class PaperspaceClient {
             @Override
             public void onResponse(Call call, Response response) {
                 int code = response.code();
-                try (ResponseBody body = response.body()) {
-                    if (code != 200 || body == null) {
-                        main.post(() -> callback.onHttpError(code));
-                        return;
-                    }
-                    String state = new JSONObject(body.string()).getString("state");
+                try (response) {
+                    String state = parseState(response);
                     main.post(() -> callback.onState(state));
-                } catch (IOException | JSONException e) {
+                } catch (IOException e) {
                     main.post(() -> callback.onHttpError(code));
                 }
             }
         });
+    }
+
+    // Blocking version of send(), for background work such as the home-screen widget
+    public void sendBlocking(String machineId, String apiKey, String action) throws IOException {
+        try (Response response = HTTP.newCall(actionRequest(machineId, apiKey, action)).execute()) {
+            if (!response.isSuccessful()) {
+                throw new HttpException(response.code());
+            }
+        }
+    }
+
+    // Blocking version of getStatus(); returns the machine's state
+    public String getStateBlocking(String machineId, String apiKey) throws IOException {
+        try (Response response = HTTP.newCall(statusRequest(machineId, apiKey)).execute()) {
+            return parseState(response);
+        }
+    }
+
+    private static Request actionRequest(String machineId, String apiKey, String action) {
+        return new Request.Builder()
+                .url(API_BASE + machineId + "/" + action)
+                .header("Authorization", "Bearer " + apiKey)
+                .patch(RequestBody.create(new byte[0], null))
+                .build();
+    }
+
+    private static Request statusRequest(String machineId, String apiKey) {
+        return new Request.Builder()
+                .url(API_BASE + machineId)
+                .header("Authorization", "Bearer " + apiKey)
+                .get()
+                .build();
+    }
+
+    private static String parseState(Response response) throws IOException {
+        ResponseBody body = response.body();
+        if (response.code() != 200 || body == null) {
+            throw new HttpException(response.code());
+        }
+        try {
+            return new JSONObject(body.string()).getString("state");
+        } catch (JSONException e) {
+            throw new HttpException(response.code());
+        }
     }
 }

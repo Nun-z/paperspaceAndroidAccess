@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess() {
                         Toast.makeText(MainActivity.this, R.string.command_sent, Toast.LENGTH_SHORT).show();
                         refreshStatus();
+                        WidgetWorker.follow(MainActivity.this, action);
                     }
 
                     @Override

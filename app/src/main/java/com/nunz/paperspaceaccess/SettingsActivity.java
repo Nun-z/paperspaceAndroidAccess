@@ -39,6 +39,7 @@ public class SettingsActivity extends AppCompatActivity {
                 return;
             }
             settings.save(machineId, apiKey);
+            WidgetWorker.refresh(this);
             Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show();
             finish();
         });

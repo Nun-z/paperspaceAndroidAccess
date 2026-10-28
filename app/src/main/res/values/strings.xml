@@ -19,4 +19,12 @@
     <string name="fields_required">Enter both the machine ID and the API key</string>
     <string name="command_sent">Command sent</string>
     <string name="command_failed">Command failed: %1$s</string>
+    <string name="sending_command">Sending command…</string>
+    <string name="widget_description">Start, shut down or restart your Paperspace machine</string>
+    <string name="widget_preview_status">Machine status: ready</string>
+    <string name="widget_start">Start</string>
+    <string name="widget_stop">Shutdown</string>
+    <string name="widget_restart">Restart</string>
+    <string name="confirm_stop">Shut down the machine?</string>
+    <string name="confirm_restart">Restart the machine?</string>
 </resources>
