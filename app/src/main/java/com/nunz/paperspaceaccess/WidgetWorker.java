@@ -71,9 +71,9 @@ public class WidgetWorker extends Worker {
         if (action != null && getInputData().getBoolean(KEY_SEND, false)) {
             // The widget's status may be old, so check the machine's state now before sending
             String state = refreshStatus(client, settings);
-            if (PaperspaceClient.isAlreadyDone(action, state)) {
-                PaperspaceWidget.update(context, context.getString(
-                        action.equals("stop") ? R.string.already_off : R.string.already_running));
+            int skipReason = PaperspaceClient.skipReason(action, state);
+            if (skipReason != 0) {
+                PaperspaceWidget.update(context, context.getString(skipReason));
                 return Result.success();
             }
 

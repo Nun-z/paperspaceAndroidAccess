@@ -71,9 +71,9 @@ public class MainActivity extends AppCompatActivity {
             openSettings();
             return;
         }
-        if (PaperspaceClient.isAlreadyDone(action, lastState)) {
-            Toast.makeText(this, action.equals("stop") ? R.string.already_off : R.string.already_running,
-                    Toast.LENGTH_SHORT).show();
+        int skipReason = PaperspaceClient.skipReason(action, lastState);
+        if (skipReason != 0) {
+            Toast.makeText(this, skipReason, Toast.LENGTH_SHORT).show();
             return;
         }
         client.send(settings.getMachineId(), settings.getApiKey(), action,

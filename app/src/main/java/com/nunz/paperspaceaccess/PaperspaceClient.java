@@ -31,10 +31,19 @@ public final class PaperspaceClient {
         }
     }
 
-    // True when the machine is already where the action would take it; the API rejects those with HTTP 400
-    public static boolean isAlreadyDone(String action, String state) {
-        return ("stop".equals(action) && "off".equals(state))
-                || ("start".equals(action) && "ready".equals(state));
+    // The API rejects commands that don't fit the machine's state with HTTP 400. Returns the
+    // message to show instead of sending the command, or 0 if the command should be sent
+    public static int skipReason(String action, String state) {
+        if ("stop".equals(action) && "off".equals(state)) {
+            return R.string.already_off;
+        }
+        if ("start".equals(action) && "ready".equals(state)) {
+            return R.string.already_running;
+        }
+        if ("restart".equals(action) && "off".equals(state)) {
+            return R.string.restart_while_off;
+        }
+        return 0;
     }
 
     public interface StatusCallback {
