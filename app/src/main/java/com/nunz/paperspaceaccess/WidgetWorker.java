@@ -116,13 +116,16 @@ public class WidgetWorker extends Worker {
         String shown;
         try {
             state = client.getStateBlocking(settings.getMachineId(), settings.getApiKey());
-            shown = state;
+            shown = context.getString(R.string.machine_status, state);
         } catch (PaperspaceClient.HttpException e) {
-            shown = context.getString(R.string.status_error, e.code);
+            int credentialsError = PaperspaceClient.credentialsError(e.code);
+            shown = credentialsError != 0
+                    ? context.getString(credentialsError)
+                    : context.getString(R.string.machine_status, context.getString(R.string.status_error, e.code));
         } catch (IOException e) {
-            shown = context.getString(R.string.unreachable);
+            shown = context.getString(R.string.machine_status, context.getString(R.string.unreachable));
         }
-        PaperspaceWidget.update(context, context.getString(R.string.machine_status, shown));
+        PaperspaceWidget.update(context, shown);
         return state;
     }
 }

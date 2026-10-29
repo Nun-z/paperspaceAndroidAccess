@@ -8,6 +8,8 @@
     <string name="not_configured">not configured</string>
     <string name="unreachable">unreachable</string>
     <string name="status_error">error (%1$d)</string>
+    <string name="credentials_rejected">Invalid API key or machine ID. Check them in Settings</string>
+    <string name="machine_not_found">Machine not found. Check the machine ID in Settings</string>
     <string name="settings">Settings</string>
     <string name="machine_id">Machine ID</string>
     <string name="api_key">API key</string>

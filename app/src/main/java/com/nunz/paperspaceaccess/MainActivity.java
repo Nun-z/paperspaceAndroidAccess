@@ -117,7 +117,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onHttpError(int code) {
                         lastState = null;
-                        setStatus(getString(R.string.status_error, code));
+                        int credentialsError = PaperspaceClient.credentialsError(code);
+                        if (credentialsError != 0) {
+                            statusText.setText(credentialsError);
+                        } else {
+                            setStatus(getString(R.string.status_error, code));
+                        }
                     }
 
                     @Override

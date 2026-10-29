@@ -31,6 +31,18 @@ public final class PaperspaceClient {
         }
     }
 
+    // A message pointing to Settings when a status check fails because of the saved
+    // credentials, or 0 for other errors, which are shown with their HTTP code
+    public static int credentialsError(int code) {
+        if (code == 401 || code == 403) {
+            return R.string.credentials_rejected;
+        }
+        if (code == 404) {
+            return R.string.machine_not_found;
+        }
+        return 0;
+    }
+
     // The API rejects commands that don't fit the machine's state with HTTP 400. Returns the
     // message to show instead of sending the command, or 0 if the command should be sent
     public static int skipReason(String action, String state) {
