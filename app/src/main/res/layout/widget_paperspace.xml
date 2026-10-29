@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:ellipsize="end"
         android:maxLines="2"
         android:padding="4dp"
         android:text="@string/widget_preview_status"

@@ -21,14 +21,20 @@ public final class PaperspaceClient {
     private static final String API_BASE = "https://api.paperspace.com/v1/machines/";
     private static final OkHttpClient HTTP = new OkHttpClient();
 
-    // The API answered, but not with success
+    // The API answered, but not with success; the message includes the API's reason when it gives one
     public static final class HttpException extends IOException {
         public final int code;
 
-        HttpException(int code) {
-            super("HTTP " + code);
+        HttpException(int code, String apiMessage) {
+            super(apiMessage == null || apiMessage.isEmpty() ? "HTTP " + code : "HTTP " + code + ": " + apiMessage);
             this.code = code;
         }
+    }
+
+    // True when the machine is already where the action would take it; the API rejects those with HTTP 400
+    public static boolean isAlreadyDone(String action, String state) {
+        return ("stop".equals(action) && "off".equals(state))
+                || ("start".equals(action) && "ready".equals(state));
     }
 
     public interface StatusCallback {
@@ -54,12 +60,13 @@ public final class PaperspaceClient {
 
             @Override
             public void onResponse(Call call, Response response) {
-                int code = response.code();
-                response.close();
-                if (code >= 200 && code < 300) {
-                    main.post(callback::onSuccess);
-                } else {
-                    main.post(() -> callback.onFailure("HTTP " + code));
+                try (response) {
+                    if (response.isSuccessful()) {
+                        main.post(callback::onSuccess);
+                    } else {
+                        String reason = httpError(response).getMessage();
+                        main.post(() -> callback.onFailure(reason));
+                    }
                 }
             }
         });
@@ -90,7 +97,7 @@ public final class PaperspaceClient {
     public void sendBlocking(String machineId, String apiKey, String action) throws IOException {
         try (Response response = HTTP.newCall(actionRequest(machineId, apiKey, action)).execute()) {
             if (!response.isSuccessful()) {
-                throw new HttpException(response.code());
+                throw httpError(response);
             }
         }
     }
@@ -121,12 +128,34 @@ public final class PaperspaceClient {
     private static String parseState(Response response) throws IOException {
         ResponseBody body = response.body();
         if (response.code() != 200 || body == null) {
-            throw new HttpException(response.code());
+            throw httpError(response);
         }
         try {
             return new JSONObject(body.string()).getString("state");
         } catch (JSONException e) {
-            throw new HttpException(response.code());
+            throw new HttpException(response.code(), null);
         }
+    }
+
+    // Reads the API's reason from an error body such as {"message": "..."} or {"error": {"message": "..."}}
+    private static HttpException httpError(Response response) {
+        String message = null;
+        try {
+            ResponseBody body = response.body();
+            if (body != null) {
+                JSONObject json = new JSONObject(body.string());
+                message = json.isNull("message") ? null : json.optString("message");
+                Object error = json.opt("error");
+                if (message == null && error instanceof JSONObject) {
+                    JSONObject errorJson = (JSONObject) error;
+                    message = errorJson.isNull("message") ? null : errorJson.optString("message");
+                } else if (message == null && error instanceof String) {
+                    message = (String) error;
+                }
+            }
+        } catch (IOException | JSONException e) {
+            // No readable reason; the HTTP code alone will have to do
+        }
+        return new HttpException(response.code(), message);
     }
 }

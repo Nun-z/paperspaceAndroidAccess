@@ -69,6 +69,14 @@ public class WidgetWorker extends Worker {
         String action = getInputData().getString(KEY_ACTION);
 
         if (action != null && getInputData().getBoolean(KEY_SEND, false)) {
+            // The widget's status may be old, so check the machine's state now before sending
+            String state = refreshStatus(client, settings);
+            if (PaperspaceClient.isAlreadyDone(action, state)) {
+                PaperspaceWidget.update(context, context.getString(
+                        action.equals("stop") ? R.string.already_off : R.string.already_running));
+                return Result.success();
+            }
+
             PaperspaceWidget.update(context, context.getString(R.string.sending_command));
             try {
                 client.sendBlocking(settings.getMachineId(), settings.getApiKey(), action);

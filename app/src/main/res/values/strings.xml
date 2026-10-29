@@ -20,6 +20,8 @@
     <string name="command_sent">Command sent</string>
     <string name="command_failed">Command failed: %1$s</string>
     <string name="sending_command">Sending command…</string>
+    <string name="already_off">The machine is already off</string>
+    <string name="already_running">The machine is already running</string>
     <string name="widget_description">Start, shut down or restart your Paperspace machine</string>
     <string name="widget_preview_status">Machine status: ready</string>
     <string name="widget_start">Start</string>

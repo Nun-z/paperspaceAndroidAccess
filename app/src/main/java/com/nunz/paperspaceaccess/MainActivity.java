@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Settings settings;
     private TextView statusText;
+    private String lastState; // from the most recent status check, or null if it failed
 
     // Get the status every few seconds, while the app is in the foreground
     private final Runnable statusPoll = new Runnable() {
@@ -70,6 +71,11 @@ public class MainActivity extends AppCompatActivity {
             openSettings();
             return;
         }
+        if (PaperspaceClient.isAlreadyDone(action, lastState)) {
+            Toast.makeText(this, action.equals("stop") ? R.string.already_off : R.string.already_running,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
         client.send(settings.getMachineId(), settings.getApiKey(), action,
                 new PaperspaceClient.ActionCallback() {
                     @Override
@@ -92,16 +98,19 @@ public class MainActivity extends AppCompatActivity {
                 new PaperspaceClient.StatusCallback() {
                     @Override
                     public void onState(String state) {
+                        lastState = state;
                         setStatus(state);
                     }
 
                     @Override
                     public void onHttpError(int code) {
+                        lastState = null;
                         setStatus(getString(R.string.status_error, code));
                     }
 
                     @Override
                     public void onUnreachable() {
+                        lastState = null;
                         setStatus(getString(R.string.unreachable));
                     }
                 });
