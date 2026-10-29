@@ -43,6 +43,19 @@ public final class PaperspaceClient {
         if ("restart".equals(action) && "off".equals(state)) {
             return R.string.restart_while_off;
         }
+        // While the machine is changing state, the API rejects every command
+        if ("starting".equals(state)) {
+            return R.string.busy_starting;
+        }
+        if ("stopping".equals(state)) {
+            return R.string.busy_stopping;
+        }
+        if ("restarting".equals(state)) {
+            return R.string.busy_restarting;
+        }
+        if ("provisioning".equals(state) || "upgrading".equals(state)) {
+            return R.string.busy_other;
+        }
         return 0;
     }
 

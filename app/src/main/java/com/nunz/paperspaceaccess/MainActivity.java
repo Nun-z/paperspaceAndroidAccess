@@ -5,9 +5,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
     private static final long STATUS_INTERVAL_MS = 5000;
@@ -73,24 +74,35 @@ public class MainActivity extends AppCompatActivity {
         }
         int skipReason = PaperspaceClient.skipReason(action, lastState);
         if (skipReason != 0) {
-            Toast.makeText(this, skipReason, Toast.LENGTH_SHORT).show();
+            showMessage(getString(skipReason));
             return;
         }
         client.send(settings.getMachineId(), settings.getApiKey(), action,
                 new PaperspaceClient.ActionCallback() {
                     @Override
                     public void onSuccess() {
-                        Toast.makeText(MainActivity.this, R.string.command_sent, Toast.LENGTH_SHORT).show();
+                        showMessage(getString(R.string.command_sent));
                         refreshStatus();
                         WidgetWorker.follow(MainActivity.this, action);
                     }
 
                     @Override
                     public void onFailure(String reason) {
-                        Toast.makeText(MainActivity.this,
-                                getString(R.string.command_failed, reason), Toast.LENGTH_LONG).show();
+                        showError(getString(R.string.command_failed, reason));
                     }
                 });
+    }
+
+    private void showMessage(String message) {
+        Snackbar.make(statusText, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    // Unlike a toast, a Snackbar can show a long error from the API in full; it stays until dismissed
+    private void showError(String message) {
+        Snackbar snackbar = Snackbar.make(statusText, message, Snackbar.LENGTH_INDEFINITE);
+        snackbar.setTextMaxLines(6);
+        snackbar.setAction(android.R.string.ok, v -> { });
+        snackbar.show();
     }
 
     private void refreshStatus() {

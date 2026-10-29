@@ -23,6 +23,10 @@
     <string name="already_off">The machine is already off</string>
     <string name="already_running">The machine is already running</string>
     <string name="restart_while_off">The machine is off. Use Start to turn it on</string>
+    <string name="busy_starting">The machine is starting. Wait until it\'s ready</string>
+    <string name="busy_stopping">The machine is shutting down. Wait until it\'s off</string>
+    <string name="busy_restarting">The machine is restarting. Wait until it\'s ready</string>
+    <string name="busy_other">The machine is busy. Try again in a few minutes</string>
     <string name="widget_description">Start, shut down or restart your Paperspace machine</string>
     <string name="widget_preview_status">Machine status: ready</string>
     <string name="widget_start">Start</string>
